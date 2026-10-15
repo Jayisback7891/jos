@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- J.OS v3 2026-10-15 standalone-links --><html lang="en"><head><meta charset="utf-8">
+<!-- J.OS v4 2026-10-15 suggestions+results --><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="J.OS">
@@ -26,9 +26,15 @@ h2 a{color:#00e5ff;letter-spacing:0;text-transform:none;font-size:13px}
 .list{padding:4px 0}.row{display:flex;justify-content:space-between;padding:11px 14px;font-size:14px;border-bottom:1px solid #ffffff10;color:#dde;text-decoration:none}
 .row:last-child{border:0}.row span{opacity:.5;font-size:12px}.empty{padding:14px;opacity:.5;font-size:13px}
 
+.sw{position:relative;z-index:5}#sg{position:absolute;left:0;right:0;top:calc(100% + 6px);padding:4px 0;display:none;max-height:60vh;overflow:auto;background:rgba(10,12,30,.92)}
+#sg.on{display:block}.sg{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:15px;color:#e8f0ff;cursor:pointer;border-bottom:1px solid #ffffff10}
+.sg:last-child{border:0}.sg.act,.sg:active{background:linear-gradient(90deg,#00e5ff22,#a100ff22)}.sg em{font-style:normal;opacity:.5;font-size:12px;margin-left:auto}.sg i{font-style:normal;width:18px;text-align:center;opacity:.8}
+#res{margin-top:14px;display:none}#res.on{display:block}.rr{display:block;padding:12px 14px;border-bottom:1px solid #ffffff10;color:#dde;text-decoration:none}.rr:last-child{border:0}
+.rr b{display:block;color:#7ff3ff;font-size:15px}.rr small{display:block;opacity:.55;font-size:12px;margin-top:2px;word-break:break-all}.rr p{margin:4px 0 0;font-size:13px;opacity:.75}
+.rh{display:flex;justify-content:space-between;padding:10px 14px;font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.7}.rh a{color:#00e5ff;letter-spacing:0;text-transform:none}
 </style></head><body>
 <div class="logo">J.OS</div><div id="clock"></div>
-<form id="f" class="glass"><input id="q" placeholder="Search or enter address" autocapitalize="off" autocorrect="off" enterkeyhint="go"><button>Go</button></form>
+<div class="sw"><form id="f" class="glass"><input id="q" placeholder="Search or enter address" autocapitalize="off" autocorrect="off" enterkeyhint="go" autocomplete="off" spellcheck="false"><button>Go</button></form><div id="sg" class="glass"></div></div><div id="res" class="glass"></div>
 <h2>Quick Links <a href="#" id="ed">Edit</a></h2><div id="tiles" class="grid"></div>
 <h2>Open Tabs <a href="#" id="ct">Clear</a></h2><div id="tabs" class="glass list"></div>
 <h2>History <a href="#" id="ch">Clear</a></h2><div id="hist" class="glass list"></div>
@@ -49,7 +55,41 @@ function render(){$('tiles').innerHTML=links.map((l,i)=>`<a class="tile glass" h
 document.addEventListener('click',e=>{const d=e.target.dataset.d;if(d!==undefined){e.preventDefault();links.splice(d,1);S('links',links);return render()}
  if(e.target.closest('#add')){e.preventDefault();const n=prompt('Name');const u=n&&prompt('URL');if(u){links.push([n,toUrl(u)]);S('links',links);render()}return}
  const a=e.target.closest('a.tile,a.row');if(a&&!document.body.classList.contains('edit')){if(SA){rec(a.getAttribute('href'))}else{e.preventDefault();go(a.getAttribute('href'))}}});
-$('f').onsubmit=e=>{e.preventDefault();const v=$('q').value.trim();$('q').value='';if(v)go(v)};
+const esc=t=>String(t).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const isUrl=t=>/^https?:\/\//i.test(t)||/^[^\s]+\.[a-z]{2,}(\/.*)?$/i.test(t);
+let sgI=-1,sgItems=[],sgT,sgN=0;
+function jsonp(url,ms=5000){return new Promise((ok,no)=>{const cb='jcb'+Date.now()+Math.floor(Math.random()*1e6),sc=document.createElement('script');const end=()=>{delete window[cb];sc.remove()};const to=setTimeout(()=>{end();no('timeout')},ms);window[cb]=d=>{clearTimeout(to);end();ok(d)};sc.onerror=()=>{clearTimeout(to);end();no('err')};sc.src=url+(url.includes('?')?'&':'?')+'callback='+cb;document.head.appendChild(sc)})}
+function local(q){q=q.toLowerCase();const out=[],seen=new Set();const add=(n,u,k)=>{const h=host(u);if(seen.has(h))return;if(n.toLowerCase().includes(q)||h.includes(q)){seen.add(h);out.push({t:n,u,k})}};
+ links.forEach(l=>add(l[0],l[1],'★'));L('hist',[]).forEach(([u])=>add(host(u),u,'↺'));return out.slice(0,4)}
+function drawSg(){const b=$('sg');if(!sgItems.length){b.classList.remove('on');return}
+ b.innerHTML=sgItems.map((x,i)=>`<div class="sg${i==sgI?' act':''}" data-s="${i}"><i>${x.k}</i>${esc(x.t)}${x.u?`<em>${esc(host(x.u))}</em>`:''}</div>`).join('');b.classList.add('on')}
+function hideSg(){sgItems=[];sgI=-1;drawSg()}
+async function suggest(){const q=$('q').value.trim(),n=++sgN;if(!q)return hideSg();
+ const loc=local(q);sgItems=[...loc];if(isUrl(q))sgItems.unshift({t:q,u:toUrl(q),k:'→'});sgI=-1;drawSg();
+ try{const d=await jsonp('https://suggestqueries.google.com/complete/search?client=firefox&q='+encodeURIComponent(q));if(n!=sgN)return;
+  const ws=(d[1]||[]).filter(w=>!sgItems.some(x=>x.t.toLowerCase()==w.toLowerCase())).slice(0,7).map(w=>({t:w,k:'⌕'}));sgItems=[...sgItems,...ws];drawSg()}catch(e){}}
+function pick(x){hideSg();if(x.u){$('q').value='';go(x.u)}else{$('q').value=x.t;results(x.t)}}
+$('q').addEventListener('input',()=>{clearTimeout(sgT);sgT=setTimeout(suggest,150)});
+$('q').addEventListener('keydown',e=>{if(!sgItems.length)return;if(e.key=='ArrowDown'||e.key=='ArrowUp'){e.preventDefault();sgI=(sgI+(e.key=='ArrowDown'?1:-1)+sgItems.length+1)%(sgItems.length+1);if(sgI==sgItems.length)sgI=-1;drawSg()}
+ else if(e.key=='Enter'&&sgI>=0){e.preventDefault();pick(sgItems[sgI])}else if(e.key=='Escape')hideSg()});
+$('sg').addEventListener('pointerdown',e=>e.preventDefault());
+$('sg').addEventListener('click',e=>{const r=e.target.closest('[data-s]');if(r)pick(sgItems[+r.dataset.s])});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.sw'))hideSg()});
+const RA=SA?' target="_blank" rel="noopener"':'';
+async function results(q){hideSg();$('q').blur();const box=$('res'),seen=new Set(),R=[];
+ const hs=new Set(),add=(t,u,d,tag)=>{if(!u)return;const h=host(u);if(seen.has(u)||(tag=='guess'&&hs.has(h)))return;seen.add(u);if(tag!='Wikipedia')hs.add(h);R.push({t,u,d,tag})};
+ const ddg='https://duckduckgo.com/?q='+encodeURIComponent(q);
+ const paint=(ld)=>{box.innerHTML=`<div class="rh">Sites for “${esc(q)}”<a href="#" id="rx">Close</a></div>`+R.map(r=>`<a class="rr row2" href="${esc(r.u)}"${RA}><b>${esc(r.t)}</b><small>${esc(r.u)}${r.tag?' · '+r.tag:''}</small>${r.d?`<p>${esc(r.d)}</p>`:''}</a>`).join('')+(ld?'<div class="empty">Finding sites…</div>':'')+`<a class="rr" href="${ddg}"${RA}><b>Search the web for “${esc(q)}”</b><small>DuckDuckGo</small></a>`;box.classList.add('on')};
+ paint(1);
+ const slug=q.toLowerCase().replace(/[^a-z0-9-]/g,'');
+ const iu='https://api.duckduckgo.com/?format=json&no_redirect=1&no_html=1&t=jos&q='+encodeURIComponent(q);const ia=fetch(iu).then(r=>r.text()).then(t=>t.trim()?JSON.parse(t):jsonp(iu,3000)).then(d=>{(d.Results||[]).forEach(r=>add(r.Text||host(r.FirstURL),r.FirstURL,'','official'));
+  if(d.AbstractText&&d.AbstractURL)add(d.Heading||q,d.AbstractURL,d.AbstractText.slice(0,160)+'…','');
+  (d.RelatedTopics||[]).flatMap(t=>t.Topics||[t]).filter(t=>t.FirstURL&&!/duckduckgo\.com\/c\//.test(t.FirstURL)).slice(0,3).forEach(t=>add((t.Text||'').split(' - ')[0]||host(t.FirstURL),t.FirstURL,t.Text,'related'))}).catch(()=>{});
+ const wp=fetch('https://en.wikipedia.org/w/api.php?action=opensearch&limit=5&format=json&origin=*&search='+encodeURIComponent(q)).then(r=>r.json()).then(d=>d[1].forEach((t,i)=>add(t,d[3][i],'','Wikipedia'))).catch(()=>{});
+ await Promise.all([ia,wp]);if(slug)['com','org','net'].forEach(t=>add(slug+'.'+t,'https://'+slug+'.'+t,'','guess'));const pr={official:0,'':1,guess:2,related:3,Wikipedia:4};R.sort((a,b)=>pr[a.tag]-pr[b.tag]);paint(0);
+ const rx=$('rx');rx.onclick=e=>{e.preventDefault();box.classList.remove('on')}}
+document.addEventListener('click',e=>{const a=e.target.closest('a.rr');if(!a)return;if(SA){rec(a.getAttribute('href'))}else{e.preventDefault();go(a.getAttribute('href'))}});
+$('f').onsubmit=e=>{e.preventDefault();const v=$('q').value.trim();if(!v)return;if(sgI>=0)return pick(sgItems[sgI]);hideSg();if(isUrl(v)){$('q').value='';go(v)}else results(v)};
 $('ed').onclick=e=>{e.preventDefault();document.body.classList.toggle('edit');$('ed').textContent=document.body.classList.contains('edit')?'Done':'Edit';render()};
 $('ct').onclick=e=>{e.preventDefault();S('tabs',[]);render()};$('ch').onclick=e=>{e.preventDefault();S('hist',[]);render()};
 render();
