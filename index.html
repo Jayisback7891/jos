@@ -1,40 +1,45 @@
 <!DOCTYPE html>
-<!-- JPOS v6 2026-10-15 rename --><html lang="en"><head><meta charset="utf-8">
+<!-- JPOS v7 2026-10-15 professional redesign --><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="JPOS">
-<meta name="theme-color" content="#05060f"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.png">
-<title>JPOS · Jayden’s Premier Operating System</title><style>.tag{margin:6px 0 4px;display:inline-block;padding:5px 14px;border:1px solid #b56bff55;border-radius:999px;background:#ffffff08;box-shadow:0 0 18px #b56bff33,inset 0 0 12px #00e5ff14;font-size:10px;font-weight:700;letter-spacing:2.2px;white-space:nowrap;text-transform:uppercase;font-variant:small-caps;background-image:linear-gradient(90deg,#00e5ff,#b56bff,#ff2fb0,#00e5ff);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 6s linear infinite;text-align:center}@keyframes shim{to{background-position:300% 0}}@media(max-width:360px){.tag{font-size:8.5px;letter-spacing:1.5px}}
-
+<meta name="theme-color" content="#0a0a0b"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"><link rel="icon" href="icon.png">
+<title>JPOS · Jayden’s Premier Operating System</title><style>
+:root{--bg:#0a0a0b;--card:#141416;--card2:#1a1a1d;--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);--tx:#ededef;--mut:#8a8a93;--acc:#6e8bff}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;min-height:100vh;font-family:-apple-system,system-ui,sans-serif;color:#e8f0ff;background:#05060f;overflow-x:hidden;
-padding:env(safe-area-inset-top) 18px env(safe-area-inset-bottom)}
-body:before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(circle at 20% 15%,#00e5ff55,transparent 40%),radial-gradient(circle at 85% 60%,#a100ff55,transparent 45%),radial-gradient(circle at 40% 100%,#ff2fb044,transparent 40%);filter:blur(30px);animation:f 18s ease-in-out infinite alternate}
-@keyframes f{to{transform:translate(4%,-3%) rotate(8deg)}}
-.logo{margin-top:28px;font-size:44px;font-weight:800;letter-spacing:4px;background:linear-gradient(90deg,#00e5ff,#b56bff,#ff2fb0);-webkit-background-clip:text;color:transparent;text-shadow:0 0 30px #00e5ff33}
-#clock{font-size:15px;opacity:.75;margin:4px 0 20px;font-variant-numeric:tabular-nums}
-.glass{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:20px}
-form{display:flex;padding:6px;box-shadow:0 0 24px #00e5ff33}
-input{flex:1;background:none;border:0;color:#fff;font-size:17px;padding:12px;outline:none}
-button{background:linear-gradient(135deg,#00e5ff,#a100ff);border:0;color:#fff;border-radius:14px;padding:0 16px;font-weight:700;font-size:15px}
-h2{font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin:26px 4px 10px;display:flex;justify-content:space-between}
-h2 a{color:#00e5ff;letter-spacing:0;text-transform:none;font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.tile{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#cfe;text-decoration:none;position:relative}
-.tile b{font-size:22px;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;background:linear-gradient(135deg,#00e5ff33,#a100ff44)}
-.tile i{position:absolute;top:-6px;right:-6px;background:#ff2fb0;border-radius:50%;width:20px;height:20px;font-style:normal;font-size:13px;display:none;align-items:center;justify-content:center}
+body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,"Segoe UI",system-ui,sans-serif;color:var(--tx);background:var(--bg);overflow-x:hidden;-webkit-font-smoothing:antialiased;
+padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom);max-width:640px;margin:0 auto}
+body:before{content:"";position:fixed;left:0;right:0;top:0;height:320px;z-index:-1;background:radial-gradient(ellipse 70% 100% at 50% 0%,rgba(110,139,255,.07),transparent 70%);pointer-events:none}
+header{text-align:center;padding:44px 0 26px}
+.logo{font-size:40px;font-weight:700;letter-spacing:-1.2px;color:#fff;line-height:1}
+.tag{margin-top:10px;font-size:10.5px;font-weight:500;letter-spacing:2.4px;text-transform:uppercase;color:var(--mut);white-space:nowrap}
+#clock{margin-top:14px;font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
+@media(max-width:360px){.tag{font-size:9px;letter-spacing:1.6px}}
+.glass{background:var(--card);border:1px solid var(--line);border-radius:14px}
+form{display:flex;align-items:center;padding:5px 5px 5px 6px;box-shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.25);transition:border-color .15s}
+form:focus-within{border-color:rgba(110,139,255,.55);box-shadow:0 0 0 3px rgba(110,139,255,.12)}
+input{flex:1;min-width:0;background:none;border:0;color:var(--tx);font:inherit;font-size:16px;padding:11px 10px;outline:none}
+input::placeholder{color:#6b6b73}
+button{background:var(--acc);border:0;color:#fff;border-radius:10px;height:38px;padding:0 16px;font:inherit;font-weight:600;font-size:14px}
+button:active{opacity:.85}
+h2{font-size:12px;font-weight:600;letter-spacing:.2px;color:var(--mut);margin:30px 2px 10px;display:flex;justify-content:space-between;align-items:baseline}
+h2 a{color:var(--acc);font-weight:500;font-size:13px;text-decoration:none}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tile{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11.5px;color:#c9c9cf;text-decoration:none;position:relative;transition:background .15s}
+.tile:active{background:var(--card2)}
+.tile b{font-size:16px;font-weight:600;color:#fff;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:7px;background:var(--card2);border:1px solid var(--line2)}
+.tile i{position:absolute;top:-6px;right:-6px;background:#3a3a40;color:#fff;border:1px solid var(--line2);border-radius:50%;width:20px;height:20px;font-style:normal;font-size:13px;display:none;align-items:center;justify-content:center}
 .edit .tile i{display:flex}
-.list{padding:4px 0}.row{display:flex;justify-content:space-between;padding:11px 14px;font-size:14px;border-bottom:1px solid #ffffff10;color:#dde;text-decoration:none}
-.row:last-child{border:0}.row span{opacity:.5;font-size:12px}.empty{padding:14px;opacity:.5;font-size:13px}
-
-.sw{position:relative;z-index:5}#sg{position:absolute;left:0;right:0;top:calc(100% + 6px);padding:4px 0;display:none;max-height:60vh;overflow:auto;background:rgba(10,12,30,.92)}
-#sg.on{display:block}.sg{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:15px;color:#e8f0ff;cursor:pointer;border-bottom:1px solid #ffffff10}
-.sg:last-child{border:0}.sg.act,.sg:active{background:linear-gradient(90deg,#00e5ff22,#a100ff22)}.sg em{font-style:normal;opacity:.5;font-size:12px;margin-left:auto}.sg i{font-style:normal;width:18px;text-align:center;opacity:.8}
-#res{margin-top:14px;display:none}#res.on{display:block}.rr{display:block;padding:12px 14px;border-bottom:1px solid #ffffff10;color:#dde;text-decoration:none}.rr:last-child{border:0}
-.rr b{display:block;color:#7ff3ff;font-size:15px}.rr small{display:block;opacity:.55;font-size:12px;margin-top:2px;word-break:break-all}.rr p{margin:4px 0 0;font-size:13px;opacity:.75}
-.rh{display:flex;justify-content:space-between;padding:10px 14px;font-size:12px;letter-spacing:2px;text-transform:uppercase;opacity:.7}.rh a{color:#00e5ff;letter-spacing:0;text-transform:none}
+.list{padding:2px 0}.row{display:flex;justify-content:space-between;padding:12px 14px;font-size:14px;border-bottom:1px solid var(--line);color:var(--tx);text-decoration:none}
+.row:last-child{border:0}.row span{color:var(--mut);font-size:12px}.empty{padding:14px;color:var(--mut);font-size:13px}
+.sw{position:relative;z-index:5}#sg{position:absolute;left:0;right:0;top:calc(100% + 6px);padding:4px 0;display:none;max-height:60vh;overflow:auto;background:var(--card2);border-color:var(--line2);box-shadow:0 12px 32px rgba(0,0,0,.5)}
+#sg.on{display:block}.sg{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:15px;color:var(--tx);cursor:pointer}
+.sg.act,.sg:active{background:rgba(255,255,255,.05)}.sg em{font-style:normal;color:var(--mut);font-size:12px;margin-left:auto}.sg i{font-style:normal;width:18px;text-align:center;color:var(--mut)}
+#res{margin-top:12px;display:none}#res.on{display:block}.rr{display:block;padding:12px 14px;border-bottom:1px solid var(--line);color:var(--tx);text-decoration:none}.rr:last-child{border:0}
+.rr b{display:block;color:#fff;font-weight:600;font-size:15px}.rr small{display:block;color:var(--acc);font-size:12px;margin-top:2px;word-break:break-all}.rr p{margin:4px 0 0;font-size:13px;color:var(--mut)}
+.rh{display:flex;justify-content:space-between;padding:12px 14px;font-size:12px;font-weight:600;color:var(--mut);border-bottom:1px solid var(--line)}.rh a{color:var(--acc);text-decoration:none;font-weight:500}
 </style></head><body>
-<div class="logo">JPOS</div><div class="tag">Jayden’s Premier Operating System</div><div id="clock"></div>
+<header><div class="logo">JPOS</div><div class="tag">Jayden’s Premier Operating System</div><div id="clock"></div></header>
 <div class="sw"><form id="f" class="glass"><input id="q" placeholder="Search or enter address" autocapitalize="off" autocorrect="off" enterkeyhint="go" autocomplete="off" spellcheck="false"><button>Go</button></form><div id="sg" class="glass"></div></div><div id="res" class="glass"></div>
 <h2>Quick Links <a href="#" id="ed">Edit</a></h2><div id="tiles" class="grid"></div>
 <h2>Open Tabs <a href="#" id="ct">Clear</a></h2><div id="tabs" class="glass list"></div>
