@@ -24,9 +24,7 @@ h2 a{color:#00e5ff;letter-spacing:0;text-transform:none;font-size:13px}
 .edit .tile i{display:flex}
 .list{padding:4px 0}.row{display:flex;justify-content:space-between;padding:11px 14px;font-size:14px;border-bottom:1px solid #ffffff10;color:#dde;text-decoration:none}
 .row:last-child{border:0}.row span{opacity:.5;font-size:12px}.empty{padding:14px;opacity:.5;font-size:13px}
-#viewer{position:fixed;inset:0;background:#05060f;display:none;flex-direction:column;z-index:9;padding-top:env(safe-area-inset-top)}
-#viewer .bar{display:flex;gap:8px;padding:8px;align-items:center}#viewer .bar div{flex:1;font-size:13px;opacity:.7;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-iframe{flex:1;border:0;background:#fff}
+
 </style></head><body>
 <div class="logo">J.OS</div><div id="clock"></div>
 <form id="f" class="glass"><input id="q" placeholder="Search or enter address" autocapitalize="off" autocorrect="off" enterkeyhint="go"><button>Go</button></form>
@@ -34,22 +32,21 @@ iframe{flex:1;border:0;background:#fff}
 <h2>Open Tabs <a href="#" id="ct">Clear</a></h2><div id="tabs" class="glass list"></div>
 <h2>History <a href="#" id="ch">Clear</a></h2><div id="hist" class="glass list"></div>
 <div style="height:30px"></div>
-<div id="viewer"><div class="bar"><button id="x">✕</button><div id="vu"></div><button id="ext">Open ↗</button></div><iframe id="fr"></iframe></div>
 <script>
 const $=id=>document.getElementById(id),L=(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),S=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 let links=L('links',[["YouTube","https://youtube.com"],["Wikipedia","https://wikipedia.org"],["Reddit","https://reddit.com"],["X","https://x.com"],["Google","https://google.com"],["GitHub","https://github.com"],["SpanishDict","https://spanishdict.com"],["Weather","https://weather.com"]]);
 const tick=()=>$('clock').textContent=new Date().toLocaleString([], {weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});tick();setInterval(tick,10000);
 function toUrl(t){t=t.trim();if(/^https?:\/\//i.test(t))return t;if(/^[^\s]+\.[a-z]{2,}(\/.*)?$/i.test(t))return 'https://'+t;return 'https://duckduckgo.com/?q='+encodeURIComponent(t)}
 function host(u){try{return new URL(u).hostname.replace('www.','')}catch(e){return u}}
-function open(u){let h=L('hist',[]);h.unshift([u,Date.now()]);S('hist',h.slice(0,30));let t=L('tabs',[]).filter(x=>x!=u);t.unshift(u);S('tabs',t.slice(0,20));render();
- window.open(u,'_blank')||(location.href=u)}
+function go(u){u=toUrl(u);let h=L('hist',[]);h.unshift([u,Date.now()]);S('hist',h.slice(0,30));let t=L('tabs',[]).filter(x=>x!=u);t.unshift(u);S('tabs',t.slice(0,20));render();
+ window.location.href=u}
 function render(){$('tiles').innerHTML=links.map((l,i)=>`<a class="tile glass" href="${l[1]}" data-i="${i}"><b>${l[0][0]}</b>${l[0]}<i data-d="${i}">×</i></a>`).join('')+(document.body.classList.contains('edit')?'<a class="tile glass" href="#" id="add"><b>+</b>Add</a>':'');
  const t=L('tabs',[]);$('tabs').innerHTML=t.length?t.map(u=>`<a class="row" href="${u}">${host(u)}<span>tab</span></a>`).join(''):'<div class="empty">No tabs yet</div>';
  const h=L('hist',[]);$('hist').innerHTML=h.length?h.slice(0,10).map(([u,d])=>`<a class="row" href="${u}">${host(u)}<span>${new Date(d).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</span></a>`).join(''):'<div class="empty">Nothing yet</div>'}
 document.addEventListener('click',e=>{const d=e.target.dataset.d;if(d!==undefined){e.preventDefault();links.splice(d,1);S('links',links);return render()}
  if(e.target.closest('#add')){e.preventDefault();const n=prompt('Name');const u=n&&prompt('URL');if(u){links.push([n,toUrl(u)]);S('links',links);render()}return}
- const a=e.target.closest('a.tile,a.row');if(a&&!document.body.classList.contains('edit')){e.preventDefault();open(a.href)}});
-$('f').onsubmit=e=>{e.preventDefault();if($('q').value)open(toUrl($('q').value));$('q').value=''};
+ const a=e.target.closest('a.tile,a.row');if(a&&!document.body.classList.contains('edit')){e.preventDefault();go(a.getAttribute('href'))}});
+$('f').onsubmit=e=>{e.preventDefault();const v=$('q').value.trim();$('q').value='';if(v)go(v)};
 $('ed').onclick=e=>{e.preventDefault();document.body.classList.toggle('edit');$('ed').textContent=document.body.classList.contains('edit')?'Done':'Edit';render()};
 $('ct').onclick=e=>{e.preventDefault();S('tabs',[]);render()};$('ch').onclick=e=>{e.preventDefault();S('hist',[]);render()};
 render();
