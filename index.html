@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<!DOCTYPE html>
+<!-- J.OS v3 2026-10-15 standalone-links --><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="J.OS">
@@ -38,14 +39,16 @@ let links=L('links',[["YouTube","https://youtube.com"],["Wikipedia","https://wik
 const tick=()=>$('clock').textContent=new Date().toLocaleString([], {weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});tick();setInterval(tick,10000);
 function toUrl(t){t=t.trim();if(/^https?:\/\//i.test(t))return t;if(/^[^\s]+\.[a-z]{2,}(\/.*)?$/i.test(t))return 'https://'+t;return 'https://duckduckgo.com/?q='+encodeURIComponent(t)}
 function host(u){try{return new URL(u).hostname.replace('www.','')}catch(e){return u}}
-function go(u){u=toUrl(u);let h=L('hist',[]);h.unshift([u,Date.now()]);S('hist',h.slice(0,30));let t=L('tabs',[]).filter(x=>x!=u);t.unshift(u);S('tabs',t.slice(0,20));render();
- window.location.href=u}
-function render(){$('tiles').innerHTML=links.map((l,i)=>`<a class="tile glass" href="${l[1]}" data-i="${i}"><b>${l[0][0]}</b>${l[0]}<i data-d="${i}">×</i></a>`).join('')+(document.body.classList.contains('edit')?'<a class="tile glass" href="#" id="add"><b>+</b>Add</a>':'');
- const t=L('tabs',[]);$('tabs').innerHTML=t.length?t.map(u=>`<a class="row" href="${u}">${host(u)}<span>tab</span></a>`).join(''):'<div class="empty">No tabs yet</div>';
- const h=L('hist',[]);$('hist').innerHTML=h.length?h.slice(0,10).map(([u,d])=>`<a class="row" href="${u}">${host(u)}<span>${new Date(d).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</span></a>`).join(''):'<div class="empty">Nothing yet</div>'}
+const SA=!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
+function rec(u){let h=L('hist',[]);h.unshift([u,Date.now()]);S('hist',h.slice(0,30));let t=L('tabs',[]).filter(x=>x!=u);t.unshift(u);S('tabs',t.slice(0,20));setTimeout(render,300)}
+function openExt(u){const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),1000)}
+function go(u){u=toUrl(u);rec(u);if(SA)openExt(u);else window.location.href=u}
+function render(){$('tiles').innerHTML=links.map((l,i)=>`<a class="tile glass" href="${l[1]}"${SA?' target="_blank" rel="noopener"':''} data-i="${i}"><b>${l[0][0]}</b>${l[0]}<i data-d="${i}">×</i></a>`).join('')+(document.body.classList.contains('edit')?'<a class="tile glass" href="#" id="add"><b>+</b>Add</a>':'');
+ const t=L('tabs',[]);$('tabs').innerHTML=t.length?t.map(u=>`<a class="row" href="${u}"${SA?' target="_blank" rel="noopener"':''}>${host(u)}<span>tab</span></a>`).join(''):'<div class="empty">No tabs yet</div>';
+ const h=L('hist',[]);$('hist').innerHTML=h.length?h.slice(0,10).map(([u,d])=>`<a class="row" href="${u}"${SA?' target="_blank" rel="noopener"':''}>${host(u)}<span>${new Date(d).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}</span></a>`).join(''):'<div class="empty">Nothing yet</div>'}
 document.addEventListener('click',e=>{const d=e.target.dataset.d;if(d!==undefined){e.preventDefault();links.splice(d,1);S('links',links);return render()}
  if(e.target.closest('#add')){e.preventDefault();const n=prompt('Name');const u=n&&prompt('URL');if(u){links.push([n,toUrl(u)]);S('links',links);render()}return}
- const a=e.target.closest('a.tile,a.row');if(a&&!document.body.classList.contains('edit')){e.preventDefault();go(a.getAttribute('href'))}});
+ const a=e.target.closest('a.tile,a.row');if(a&&!document.body.classList.contains('edit')){if(SA){rec(a.getAttribute('href'))}else{e.preventDefault();go(a.getAttribute('href'))}}});
 $('f').onsubmit=e=>{e.preventDefault();const v=$('q').value.trim();$('q').value='';if(v)go(v)};
 $('ed').onclick=e=>{e.preventDefault();document.body.classList.toggle('edit');$('ed').textContent=document.body.classList.contains('edit')?'Done':'Edit';render()};
 $('ct').onclick=e=>{e.preventDefault();S('tabs',[]);render()};$('ch').onclick=e=>{e.preventDefault();S('hist',[]);render()};
